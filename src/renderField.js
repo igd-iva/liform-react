@@ -16,8 +16,8 @@ const guessWidget = (fieldSchema, theme) => {
 
 const renderField = (fieldSchema,
                      fieldName,
-                     theme,
                      readOnly,
+                     theme,
                      prefix = "",
                      context = {},
                      required = false) => {
