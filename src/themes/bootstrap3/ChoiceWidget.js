@@ -31,6 +31,7 @@ class RenderSelect extends React.Component {
                     id={"field-" + this.props.name}
                     required={this.props.required}
                     multiple={this.props.multiple}
+                    readOnly={this.props.readOnly}
                 >
                     {!this.props.multiple && !this.props.schema.default && (
                         <option key={""} value={""}>
@@ -70,6 +71,7 @@ const ChoiceWidget = props => {
             description={props.schema.description}
             schema={props.schema}
             multiple={props.multiple}
+            readOnly={props.readOnly}
         />
     );
 };
@@ -80,7 +82,8 @@ ChoiceWidget.propTypes = {
     label: PropTypes.string,
     theme: PropTypes.object,
     multiple: PropTypes.bool,
-    required: PropTypes.bool
+    required: PropTypes.bool,
+    readOnly: PropTypes.bool
 };
 
 export default ChoiceWidget;

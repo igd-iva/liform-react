@@ -148,7 +148,8 @@ ArrayWidget.propTypes = {
     fieldName: PropTypes.string,
     label: PropTypes.string,
     theme: PropTypes.object,
-    context: PropTypes.object
+    context: PropTypes.object,
+    readOnly: PropTypes.bool
 };
 
 export default ArrayWidget;
