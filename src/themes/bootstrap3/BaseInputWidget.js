@@ -54,6 +54,7 @@ const BaseInputWidget = props => {
             type={props.type}
             normalize={props.normalizer}
             readOnly={props.readOnly}
+            schema = {props.schema}
         />
     );
 };
