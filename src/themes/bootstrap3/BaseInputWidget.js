@@ -1,59 +1,71 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Field } from "redux-form";
+import {Field} from "redux-form";
 
-const renderInput = field => {
-  const className = classNames([
-    "form-group",
-    { "has-error": field.meta.touched && field.meta.error }
-  ]);
-  return (
-    <div className={className}>
-      <label className="control-label" htmlFor={field.id}>
-        {field.label}
-      </label>
-      <input
-        {...field.input}
-        type={field.type}
-        required={field.required}
-        className="form-control"
-        placeholder={field.placeholder}
-      />
-      {field.meta.touched &&
-        field.meta.error && (
-          <span className="help-block">{field.meta.error}</span>
-        )}
-      {field.description && (
-        <span className="help-block">{field.description}</span>
-      )}
-    </div>
-  );
-};
+class RenderInput extends React.Component {
+
+    componentDidMount() {
+        if (!this.props.input.value && this.props.schema.default) {
+            this.props.input.value = this.props.schema.default;
+            this.props.input.onChange(this.props.schema.default);
+        }
+    }
+
+    render() {
+        const className = classNames([
+            "form-group",
+            {"has-error": this.props.meta.touched && this.props.meta.error}
+        ]);
+        return (
+            <div className={className}>
+                <label className="control-label" htmlFor={this.props.id}>
+                    {this.props.label}
+                </label>
+                <input
+                    {...this.props.input}
+                    type={this.props.type}
+                    required={this.props.required}
+                    className="form-control"
+                    placeholder={this.props.placeholder}
+                    readOnly={this.props.readOnly}
+                />
+                {this.props.meta.touched && this.props.meta.error && (
+                    <span className="help-block">{this.props.meta.error}</span>
+                )}
+                {this.props.description && (
+                    <span className="help-block">{this.props.description}</span>
+                )}
+            </div>
+        );
+    }
+}
 
 const BaseInputWidget = props => {
-  return (
-    <Field
-      component={renderInput}
-      label={props.label}
-      name={props.fieldName}
-      required={props.required}
-      id={"field-" + props.fieldName}
-      placeholder={props.schema.default}
-      description={props.schema.description}
-      type={props.type}
-      normalize={props.normalizer}
-    />
-  );
+    return (
+        <Field
+            component={(field) => <RenderInput {...field}/>}
+            label={props.label}
+            name={props.fieldName}
+            required={props.required}
+            id={"field-" + props.fieldName}
+            placeholder={props.schema.default}
+            description={props.schema.description}
+            type={props.type}
+            normalize={props.normalizer}
+            readOnly={props.readOnly}
+        />
+    );
 };
 
 BaseInputWidget.propTypes = {
-  schema: PropTypes.object.isRequired,
-  type: PropTypes.string.isRequired,
-  required: PropTypes.bool,
-  fieldName: PropTypes.string,
-  label: PropTypes.string,
-  normalizer: PropTypes.func
+    schema: PropTypes.object.isRequired,
+    type: PropTypes.string.isRequired,
+    required: PropTypes.bool,
+    fieldName: PropTypes.string,
+    label: PropTypes.string,
+    normalizer: PropTypes.func,
+    readOnly: PropTypes.bool
 };
 
 export default BaseInputWidget;
