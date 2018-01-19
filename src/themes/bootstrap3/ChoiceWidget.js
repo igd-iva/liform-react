@@ -20,6 +20,9 @@ class RenderSelect extends React.Component {
         const optionNames = this.props.schema.enum_titles || options;
 
         const selectOptions = _zipObject(options, optionNames);
+
+        if (options.length === 1 && optionNames[0] === this.props.schema.default)
+            return ('');
         return (
             <div className={className}>
                 <label className="control-label" htmlFor={"field-" + this.props.name}>
