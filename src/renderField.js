@@ -10,6 +10,10 @@ const guessWidget = (fieldSchema, theme) => {
         return "oneOf";
     } else if (theme[fieldSchema.format]) {
         return fieldSchema.format;
+    } else if (fieldSchema.format === "date") {
+        return "compatible-date";
+    } else if (fieldSchema.format === "date-time") {
+        return "compatible-datetime";
     }
     return fieldSchema.type || "object";
 };
