@@ -10,10 +10,10 @@ import {setError} from "./buildSyncValidation";
 import compileSchema from "./compileSchema";
 
 const BaseForm = props => {
-    const {schema, handleSubmit, theme, error, submitting, context} = props;
+    const {schema, handleSubmit, theme, error, submitting, context, readOnly} = props;
     return (
         <form onSubmit={handleSubmit}>
-            {renderField(schema, null, false, theme || DefaultTheme, "", context)}
+            {renderField(schema, null, readOnly, theme, "", context)}
             <div>{error && <strong>{error}</strong>}</div>
             <button className="btn btn-primary" type="submit" disabled={submitting}>
                 Submit
@@ -30,7 +30,8 @@ const Liform = props => {
         form: props.formKey || props.schema.title || "form",
         validate: props.syncValidation || buildSyncValidation(schema, props.ajv),
         initialValues: props.initialValues,
-        context: {...props.context, formName}
+        context: {...props.context, formName},
+        readOnly: props.readOnly
     })(props.baseForm || BaseForm);
     return (
         <FinalForm

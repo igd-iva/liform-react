@@ -7,8 +7,11 @@ import {zipObject as _zipObject, map as _map} from "lodash";
 class RenderSelect extends React.Component {
     componentDidMount() {
         const optionNames = this.props.schema.enum_titles || this.props.schema.enum;
-        if ((!this.props.input.value || (optionNames.length === 1 && optionNames[0] !== this.props.input.value)) && this.props.schema.default)
-            this.props.input.onChange(this.props.schema.default);
+        if ((this.props.input.value === "" || (optionNames.length === 1 && optionNames[0] !== this.props.input.value)) && this.props.defaultValue) {
+            this.setState({}, () => {
+                this.props.input.onChange(this.props.defaultValue);
+            });
+        }
     }
 
     render() {
@@ -23,32 +26,37 @@ class RenderSelect extends React.Component {
 
         if (options.length === 1 && optionNames[0] === this.props.schema.default)
             return ('');
+
         return (
             <div className={className}>
-                <label className="control-label" htmlFor={"field-" + this.props.name}>
+                <label className="control-label" htmlFor={this.props.id}>
                     {this.props.label}
                 </label>
-                <select
-                    {...this.props.input}
-                    className="form-control"
-                    id={"field-" + this.props.name}
-                    required={this.props.required}
-                    multiple={this.props.multiple}
-                    readOnly={this.props.readOnly}
-                >
-                    {!this.props.multiple && !this.props.schema.default && (
-                        <option key={""} value={""}>
-                            {this.props.placeholder}
-                        </option>
-                    )}
-                    {_map(selectOptions, (name, value) => {
-                        return (
-                            <option key={value} value={value}>
-                                {name}
+                {this.props.readOnly && (<p className="form-control-static">{this.props.input.value}</p>)}
+                {!this.props.readOnly && (
+                    <select
+                        {...this.props.input}
+                        value={!this.props.input.value && this.props.multiple ? [] : this.props.input.value}
+                        className="form-control"
+                        id={this.props.id}
+                        required={this.props.required}
+                        multiple={this.props.multiple}
+
+                    >
+                        {!this.props.multiple && !this.props.schema.default && (
+                            <option key={""} value={""}>
+                                {this.props.placeholder}
                             </option>
-                        );
-                    })}
-                </select>
+                        )}
+                        {_map(selectOptions, (name, value) => {
+                            return (
+                                <option key={value} value={value}>
+                                    {name}
+                                </option>
+                            );
+                        })}
+                    </select>
+                )}
 
                 {this.props.meta.touched &&
                 this.props.meta.error && (
@@ -65,7 +73,7 @@ class RenderSelect extends React.Component {
 const ChoiceWidget = props => {
     return (
         <Field
-            component={(field) => <RenderSelect {...field}/>}
+            component={RenderSelect}
             label={props.label}
             name={props.fieldName}
             required={props.required}
@@ -75,6 +83,7 @@ const ChoiceWidget = props => {
             schema={props.schema}
             multiple={props.multiple}
             readOnly={props.readOnly}
+            defaultValue={props.schema.default}
         />
     );
 };

@@ -22,22 +22,22 @@ const renderChoice = field => {
             <label className="control-label" htmlFor={"field-" + field.name}>
                 {field.label}
             </label>
-            {Object.entries(selectOptions).map(([value, name]) => (
-                <div className="radio" key={value}>
-                    <label>
-                        <input
-                            type="radio"
-                            name={field.input.name}
-                            value={value}
-                            checked={field.input.value === value}
-                            onChange={e => field.input.onChange(value)}
-                            readOnly={field.readOnly}
-                        />
-                        {name}
-                    </label>
-                </div>
-            ))}
-
+            {field.readOnly && (<p className="form-control-static">{field.value}</p>)}
+            {field.readOnly && (
+                Object.entries(selectOptions).map(([value, name]) => (
+                    <div className="radio" key={value}>
+                        <label>
+                            <input
+                                type="radio"
+                                name={field.input.name}
+                                value={value}
+                                checked={field.input.value === value}
+                                onChange={e => field.input.onChange(value)}
+                            />
+                            {name}
+                        </label>
+                    </div>
+                )))}
             {field.meta.touched &&
             field.meta.error && (
                 <span className="help-block">{field.meta.error}</span>

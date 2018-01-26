@@ -1,14 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import {Field} from "redux-form";
+import {Field, change} from "redux-form";
 
 class RenderInput extends React.Component {
-
     componentDidMount() {
-        if (!this.props.input.value && this.props.schema.default) {
-            this.props.input.value = this.props.schema.default;
-            this.props.input.onChange(this.props.schema.default);
+        if (!this.props.input.value && this.props.defaultValue) {
+            this.setState({}, () => {
+                this.props.input.onChange(this.props.defaultValue);
+            });
         }
     }
 
@@ -17,19 +17,24 @@ class RenderInput extends React.Component {
             "form-group",
             {"has-error": this.props.meta.touched && this.props.meta.error}
         ]);
+        const style = {
+            color: this.props.type === 'color' ? this.props.input.value : ""
+        };
+
         return (
             <div className={className}>
                 <label className="control-label" htmlFor={this.props.id}>
                     {this.props.label}
                 </label>
-                <input
-                    {...this.props.input}
-                    type={this.props.type}
-                    required={this.props.required}
-                    className="form-control"
-                    placeholder={this.props.placeholder}
-                    readOnly={this.props.readOnly}
-                />
+                {this.props.readOnly ?
+                    <p className="form-control-static" style={style}>{this.props.input.value}</p> :
+                    <input {...this.props.input}
+                           type={this.props.type}
+                           required={this.props.required}
+                           className="form-control"
+                           placeholder={this.props.placeholder}
+                           readOnly={this.props.readOnly}/>
+                }
                 {this.props.meta.touched && this.props.meta.error && (
                     <span className="help-block">{this.props.meta.error}</span>
                 )}
@@ -44,7 +49,7 @@ class RenderInput extends React.Component {
 const BaseInputWidget = props => {
     return (
         <Field
-            component={(field) => <RenderInput {...field}/>}
+            component={RenderInput}
             label={props.label}
             name={props.fieldName}
             required={props.required}
@@ -54,7 +59,7 @@ const BaseInputWidget = props => {
             type={props.type}
             normalize={props.normalizer}
             readOnly={props.readOnly}
-            schema = {props.schema}
+            defaultValue={props.schema.default}
         />
     );
 };

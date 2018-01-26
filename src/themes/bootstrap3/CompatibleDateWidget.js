@@ -38,12 +38,22 @@ class CompatibleDate extends React.Component {
         this.state = {
             year: null,
             month: null,
-            day: null,
-            hour: null,
-            minute: null,
-            second: null
+            day: null
         };
         this.onBlur = this.onBlur.bind(this);
+    }
+
+    componentDidMount() {
+        if (!this.props.input.value && this.props.schema.default) {
+            this.props.input.value = this.props.schema.default;
+            this.setState({
+                year: extractYear(this.props.schema.default),
+                month: extractMonth(this.props.schema.default),
+                day: extractDay(this.props.schema.default)
+            }, () => {
+                this.props.input.onChange(this.buildRfc3339Date());
+            });
+        }
     }
 
     // Produces a RFC 3339 full-date from the state
@@ -52,6 +62,12 @@ class CompatibleDate extends React.Component {
         const month = this.state.month || "";
         const day = this.state.day || "";
         return year + "-" + month + "-" + day;
+    }
+
+    getStaticFieldText() {
+        if (this.state.year === null || this.state.month === null || this.state.day === null)
+            return "";
+        return `${this.state.year}.${this.state.month}.${this.state.day}`
     }
 
     onChangeField(field, e) {
@@ -78,38 +94,44 @@ class CompatibleDate extends React.Component {
                 <label className="control-label" htmlFor={field.id}>
                     {field.label}
                 </label>
-                <ul className="list-inline" readOnly={field.readOnly}>
-                    <li>
-                        <DateSelector
-                            extractField={extractYear}
-                            range={range(field.startYear, field.endYear)}
-                            emptyOption="year"
-                            onBlur={this.onBlur}
-                            onChange={this.onChangeField.bind(this, "year")}
-                            {...field}
-                        />
-                    </li>
-                    <li>
-                        <DateSelector
-                            extractField={extractMonth}
-                            range={rangeZeroPad(1, 13)}
-                            emptyOption="month"
-                            onBlur={this.onBlur}
-                            onChange={this.onChangeField.bind(this, "month")}
-                            {...field}
-                        />
-                    </li>
-                    <li>
-                        <DateSelector
-                            extractField={extractDay}
-                            range={rangeZeroPad(1, 32)}
-                            emptyOption="day"
-                            onBlur={this.onBlur}
-                            onChange={this.onChangeField.bind(this, "day")}
-                            {...field}
-                        />
-                    </li>
-                </ul>
+                {field.readOnly && <p className="form-control-static">{this.getStaticFieldText()}</p>}
+                {!field.readOnly && (
+                    <ul className="list-inline" readOnly={field.readOnly}>
+                        <li>
+                            <DateSelector
+                                extractField={extractYear}
+                                range={range(field.startYear, field.endYear)}
+                                emptyOption="year"
+                                onBlur={this.onBlur}
+                                onChange={this.onChangeField.bind(this, "year")}
+                                idx={`${this.props.id}-year`}
+                                {...field}
+                            />
+                        </li>
+                        <li>
+                            <DateSelector
+                                extractField={extractMonth}
+                                range={rangeZeroPad(1, 13)}
+                                emptyOption="month"
+                                onBlur={this.onBlur}
+                                onChange={this.onChangeField.bind(this, "month")}
+                                idx={`${this.props.id}-month`}
+                                {...field}
+                            />
+                        </li>
+                        <li>
+                            <DateSelector
+                                extractField={extractDay}
+                                range={rangeZeroPad(1, 32)}
+                                emptyOption="day"
+                                onBlur={this.onBlur}
+                                onChange={this.onChangeField.bind(this, "day")}
+                                idx={`${this.props.id}-day`}
+                                {...field}
+                            />
+                        </li>
+                    </ul>
+                )}
                 {field.meta.touched &&
                 field.meta.error && (
                     <span className="help-block">{field.meta.error}</span>
@@ -121,6 +143,7 @@ class CompatibleDate extends React.Component {
         );
     }
 }
+
 const CompatibleDateWidget = props => {
     return (
         <Field
@@ -135,6 +158,7 @@ const CompatibleDateWidget = props => {
             endYear={props.schema["end-year"] || new Date().getFullYear() + 5}
             type={props.type}
             readOnly={props.readOnly}
+            schema={props.schema}
         />
     );
 };

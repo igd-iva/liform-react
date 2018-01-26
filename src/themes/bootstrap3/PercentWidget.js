@@ -1,61 +1,78 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import { Field } from "redux-form";
+import {Field} from "redux-form";
 
-const renderInput = field => {
-  const className = classNames([
-    "form-group",
-    { "has-error": field.meta.touched && field.meta.error }
-  ]);
-  return (
-    <div className={className}>
-      <label className="control-label" htmlFor={"field-" + field.name}>
-        {field.label}
-      </label>
-      <div className="input-group">
-        <input
-          {...field.input}
-          type="number"
-          className="form-control"
-          id={"field-" + field.name}
-          required={field.required}
-          placeholder={field.placeholder}
-        />
-        <span className="input-group-addon"> %</span>
-      </div>
-      {field.meta.touched &&
-        field.meta.error && (
-          <span className="help-block">{field.meta.error}</span>
-        )}
-      {field.description && (
-        <span className="help-block">{field.description}</span>
-      )}
-    </div>
-  );
-};
+class RenderInput extends React.Component {
+
+    componentDidMount() {
+        if (!this.props.input.value && this.props.defaultValue) {
+            this.setState({}, () => {
+                this.props.input.onChange(this.props.defaultValue);
+            });
+        }
+    }
+
+    render() {
+        const className = classNames([
+            "form-group",
+            {"has-error": this.props.meta.touched && this.props.meta.error}
+        ]);
+
+        return (
+            <div className={className}>
+                <label className="control-label" htmlFor={"this.props-" + this.props.name}>
+                    {this.props.label}
+                </label>
+                {this.props.readOnly && <p className="form-control-static">{this.props.input.value} %</p>}
+                {!this.props.readOnly && (
+                    <div className="input-group">
+                        <input
+                            {...this.props.input}
+                            type="number"
+                            className="form-control"
+                            id={this.props.id}
+                            required={this.props.required}
+                            placeholder={this.props.placeholder}
+                        />
+                        <span className="input-group-addon"> %</span>
+                    </div>
+                )}
+                {this.props.meta.touched &&
+                this.props.meta.error && (
+                    <span className="help-block">{this.props.meta.error}</span>
+                )}
+                {this.props.description && (
+                    <span className="help-block">{this.props.description}</span>
+                )}
+            </div>
+        );
+    }
+}
 
 const Widget = props => {
-  return (
-    <Field
-      component={renderInput}
-      label={props.label}
-      name={props.fieldName}
-      required={props.required}
-      id={"field-" + props.fieldName}
-      placeholder={props.schema.default}
-      description={props.schema.description}
-    />
-  );
+    return (
+        <Field
+            component={RenderInput}
+            label={props.label}
+            name={props.fieldName}
+            required={props.required}
+            id={"field-" + props.fieldName}
+            placeholder={props.schema.default}
+            description={props.schema.description}
+            readOnly={props.readOnly}
+            defaultValue={props.schema.default}
+        />
+    );
 };
 
 Widget.propTypes = {
-  schema: PropTypes.object.isRequired,
-  fieldName: PropTypes.string,
-  label: PropTypes.string,
-  theme: PropTypes.object,
-  multiple: PropTypes.bool,
-  required: PropTypes.bool
+    schema: PropTypes.object.isRequired,
+    fieldName: PropTypes.string,
+    label: PropTypes.string,
+    theme: PropTypes.object,
+    multiple: PropTypes.bool,
+    required: PropTypes.bool
 };
 
 export default Widget;

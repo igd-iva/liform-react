@@ -1,62 +1,78 @@
 import React from "react";
-import { Field } from "redux-form";
+import {Field} from "redux-form";
 import classNames from "classnames";
 
 const processFile = (onChange, e) => {
-  const files = e.target.files;
-  return new Promise(() => {
-    let reader = new FileReader();
-    reader.addEventListener(
-      "load",
-      () => {
-        onChange(reader.result);
-      },
-      false
-    );
-    reader.readAsDataURL(files[0]);
-  });
+    const files = e.target.files;
+    return new Promise(() => {
+        let reader = new FileReader();
+        reader.addEventListener(
+            "load",
+            () => {
+                onChange(reader.result);
+            },
+            false
+        );
+        reader.readAsDataURL(files[0]);
+    });
 };
 
-const File = field => {
-  const className = classNames([
-    "form-group",
-    { "has-error": field.meta.touched && field.meta.error }
-  ]);
-  return (
-    <div className={className}>
-      <label className="control-label" htmlFor={field.id}>
-        {field.label}
-      </label>
-      <input
-        name={field.name}
-        onBlur={field.onBlur}
-        onChange={processFile.bind(this, field.input.onChange)}
-        required={field.required}
-        className="form-control"
-        type="file"
-      />
-      {field.meta.touched &&
-        field.meta.error && (
-          <span className="help-block">{field.meta.error}</span>
-        )}
-      {field.description && <span>{field.description}</span>}
-    </div>
-  );
-};
+class RenderInput extends React.Component {
+
+    componentDidMount() {
+        if (!this.props.input.value && this.props.defaultValue) {
+            this.setState({}, () => {
+                this.props.input.onChange(this.props.defaultValue);
+            });
+        }
+    }
+
+    render() {
+        const className = classNames([
+            "form-group",
+            {"has-error": this.props.meta.touched && this.props.meta.error}
+        ]);
+        return (
+            <div className={className}>
+                <label className="control-label" htmlFor={this.props.id}>
+                    {this.props.label}
+                </label>
+                {this.props.readOnly && (<p className="form-control-static">{this.props.input.value}</p>)}
+                {!this.props.readOnly && (
+                    <input
+                        name={this.props.name}
+                        onBlur={this.props.onBlur}
+                        onChange={processFile.bind(this, this.props.input.onChange)}
+                        required={this.props.required}
+                        className="form-control"
+                        type="file"
+                    />
+                )}
+                {this.props.meta.touched &&
+                this.props.meta.error && (
+                    <span className="help-block">{this.props.meta.error}</span>
+                )}
+                {this.props.description && <span>{this.props.description}</span>}
+            </div>
+        );
+    }
+}
 
 const FileWidget = props => {
-  return (
-    <Field
-      component={File}
-      label={props.label}
-      name={props.fieldName}
-      required={props.required}
-      id={"field-" + props.fieldName}
-      placeholder={props.schema.default}
-      description={props.schema.description}
-      type={props.type}
-    />
-  );
+    return (
+        <Field
+            component={(field) => <RenderInput {...field}/>}
+            label={props.label}
+            name={props.fieldName}
+            required={props.required}
+            id={"field-" + props.fieldName}
+            placeholder={props.schema.default}
+            description={props.schema.description}
+            type={props.type}
+            readOnly={props.readOnly}
+            defaultValue={props.defaultValue}
+        />
+    );
 };
 
 export default FileWidget;

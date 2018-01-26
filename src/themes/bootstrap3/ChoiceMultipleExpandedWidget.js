@@ -24,35 +24,41 @@ const renderChoice = field => {
         "form-group",
         {"has-error": field.meta.touched && field.meta.error}
     ]);
+    const staticClassname = classNames([
+        "glyphicon",
+        {"glyphicon-ok": field.input.value},
+        {"glyphicon-remove": !field.input.value}
+    ]);
     const options = field.schema.items.enum;
     const optionNames = field.schema.items.enum_titles || options;
 
     const selectOptions = zipObject(options, optionNames);
     return (
         <div className={className}>
-            <label className="control-label" htmlFor={"field-" + field.name}>
+            <label className="control-label" htmlFor={field.id}>
                 {field.label}
             </label>
             {Object.entries(selectOptions).map(([value, name]) => (
-                <div className="checkbox" key={value}>
-                    <label>
-                        <input
-                            type="checkbox"
-                            value={value}
-                            checked={field.input.value.indexOf(value) !== -1}
-                            readOnly={field.readOnly}
-                            onChange={e =>
-                                changeValue(
-                                    e.target.checked,
-                                    value,
-                                    field.input.onChange,
-                                    field.input.value
-                                )
-                            }
-                        />
-                        {name}
-                    </label>
-                </div>
+                field.readOnly ? <p className="form-control-static"><span className={staticClassname}/> {name}</p> :
+                    <div className="checkbox" key={value}>
+                        <label>
+                            <input
+                                type="checkbox"
+                                value={value}
+                                checked={field.input.value.indexOf(value) !== -1}
+                                readOnly={field.readOnly}
+                                onChange={e =>
+                                    changeValue(
+                                        e.target.checked,
+                                        value,
+                                        field.input.onChange,
+                                        field.input.value
+                                    )
+                                }
+                            />
+                            {name}
+                        </label>
+                    </div>
             ))}
 
             {field.meta.touched &&
