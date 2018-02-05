@@ -46,6 +46,7 @@ class RenderInput extends React.Component {
                         required={this.props.required}
                         className="form-control"
                         type="file"
+                        id={this.props.id}
                     />
                 )}
                 {this.props.meta.touched &&
@@ -65,7 +66,7 @@ const FileWidget = props => {
             label={props.label}
             name={props.fieldName}
             required={props.required}
-            id={"field-" + props.fieldName}
+            id={props.context.formName + "-field-" + props.fieldName}
             placeholder={props.schema.default}
             description={props.schema.description}
             type={props.type}

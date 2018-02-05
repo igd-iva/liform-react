@@ -30,7 +30,7 @@ class OneOfChoiceWidget extends Component {
                 <select
                     className="form-control"
                     onChange={this.selectItem.bind(this)}
-                    id={"field-" + field.fieldName}
+                    id={field.context.formName + "-field-" + field.fieldName}
                     required={field.required}
                     multiple={false}
                 >

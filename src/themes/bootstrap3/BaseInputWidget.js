@@ -29,6 +29,7 @@ class RenderInput extends React.Component {
                 {this.props.readOnly ?
                     <p className="form-control-static" style={style}>{this.props.input.value}</p> :
                     <input {...this.props.input}
+                           id={this.props.id}
                            type={this.props.type}
                            required={this.props.required}
                            className="form-control"
@@ -53,7 +54,7 @@ const BaseInputWidget = props => {
             label={props.label}
             name={props.fieldName}
             required={props.required}
-            id={"field-" + props.fieldName}
+            id={props.context.formName + "-field-" + props.fieldName}
             placeholder={props.schema.default}
             description={props.schema.description}
             type={props.type}

@@ -225,7 +225,7 @@ const CompatibleDateTimeWidget = props => {
             label={props.label}
             name={props.fieldName}
             required={props.required}
-            id={"field-" + props.fieldName}
+            id={props.context.formName + "-field-" + props.fieldName}
             placeholder={props.schema.default}
             description={props.schema.description}
             startYear={props.schema["start-year"] || 1900}

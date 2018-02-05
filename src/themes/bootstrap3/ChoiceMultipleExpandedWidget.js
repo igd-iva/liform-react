@@ -45,6 +45,7 @@ const renderChoice = field => {
                             <input
                                 type="checkbox"
                                 value={value}
+                                id={field.id}
                                 checked={field.input.value.indexOf(value) !== -1}
                                 readOnly={field.readOnly}
                                 onChange={e =>
@@ -79,7 +80,7 @@ const ChoiceMultipleExpandedWidget = props => {
             label={props.label}
             name={props.fieldName}
             required={props.required}
-            id={"field-" + props.fieldName}
+            id={props.context.formName + "-field-" + props.fieldName}
             placeholder={props.schema.default}
             description={props.schema.description}
             schema={props.schema}
