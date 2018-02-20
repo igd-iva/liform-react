@@ -12,6 +12,8 @@ const guessWidget = (fieldSchema, theme) => {
         return "compatible-date";
     } else if (fieldSchema.format === "date-time") {
         return "compatible-datetime";
+    } else if (fieldSchema.format === "date-time-range") {
+        return "date-time-range";
     } else if (theme[fieldSchema.format]) {
         return fieldSchema.format;
     }
@@ -44,7 +46,7 @@ const renderField = (fieldSchema,
         label: fieldSchema.showLabel === false ? "" : fieldSchema.title || fieldName,
         required: required,
         schema: fieldSchema,
-        readOnly: readOnly,
+        readOnly: readOnly || fieldSchema.readOnly,
         theme,
         context,
         prefix

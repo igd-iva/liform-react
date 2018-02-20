@@ -31,7 +31,8 @@ const Liform = props => {
         validate: props.syncValidation || buildSyncValidation(schema, props.ajv),
         initialValues: props.initialValues,
         context: {...props.context, formName},
-        readOnly: props.readOnly
+        readOnly: props.readOnly,
+        destroyOnUnmount: false
     })(props.baseForm || BaseForm);
     return (
         <FinalForm

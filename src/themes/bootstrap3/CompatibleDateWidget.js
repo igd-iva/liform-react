@@ -2,85 +2,21 @@ import React from "react";
 import classNames from "classnames";
 import {Field} from "redux-form";
 import DateSelector from "./DateSelector";
-
-// produces an array [start..end-1]
-const range = (start, end) =>
-    Array.from({length: end - start}, (v, k) => k + start);
-
-// produces an array [start..end-1] padded with zeros, (two digits)
-const rangeZeroPad = (start, end) =>
-    Array.from({length: end - start}, (v, k) => ("0" + (k + start)).slice(-2));
-
-const extractYear = value => {
-    return extractDateToken(value, 0);
-};
-const extractMonth = value => {
-    return extractDateToken(value, 1);
-};
-const extractDay = value => {
-    return extractDateToken(value, 2);
-};
-
-const extractDateToken = (value, index) => {
-    if (!value) {
-        return "";
-    }
-    const tokens = value.split(/-/);
-    if (tokens.length !== 3) {
-        return "";
-    }
-    return tokens[index];
-};
+import 'react-day-picker/lib/style.css';
+import DayPickerInput from 'react-day-picker/DayPickerInput';
+import {
+    formatDate,
+    parseDate,
+} from 'react-day-picker/moment';
+import {DateInput} from "./DateInput";
 
 class CompatibleDate extends React.Component {
-    constructor(props, context) {
-        super(props, context);
-        this.state = {
-            year: null,
-            month: null,
-            day: null
-        };
-        this.onBlur = this.onBlur.bind(this);
-    }
-
     componentDidMount() {
         if (!this.props.input.value && this.props.schema.default) {
-            this.props.input.value = this.props.schema.default;
-            this.setState({
-                year: extractYear(this.props.schema.default),
-                month: extractMonth(this.props.schema.default),
-                day: extractDay(this.props.schema.default)
-            }, () => {
-                this.props.input.onChange(this.buildRfc3339Date());
+            this.setState({}, () => {
+                this.props.input.onChange(this.props.schema.default);
             });
         }
-    }
-
-    // Produces a RFC 3339 full-date from the state
-    buildRfc3339Date() {
-        const year = this.state.year || "";
-        const month = this.state.month || "";
-        const day = this.state.day || "";
-        return year + "-" + month + "-" + day;
-    }
-
-    getStaticFieldText() {
-        if (this.state.year === null || this.state.month === null || this.state.day === null)
-            return "";
-        return `${this.state.year}.${this.state.month}.${this.state.day}`
-    }
-
-    onChangeField(field, e) {
-        const value = e.target.value;
-        let changeset = {};
-        changeset[field] = value;
-        this.setState(changeset, () => {
-            this.props.input.onChange(this.buildRfc3339Date());
-        });
-    }
-
-    onBlur() {
-        this.props.input.onBlur(this.buildRfc3339Date());
     }
 
     render() {
@@ -94,43 +30,25 @@ class CompatibleDate extends React.Component {
                 <label className="control-label" htmlFor={field.id}>
                     {field.label}
                 </label>
-                {field.readOnly && <p className="form-control-static">{this.getStaticFieldText()}</p>}
+                {field.readOnly && <p className="form-control-static">{formatDate(field.input.value, 'LL')}</p>}
                 {!field.readOnly && (
-                    <ul className="list-inline" readOnly={field.readOnly}>
-                        <li>
-                            <DateSelector
-                                extractField={extractYear}
-                                range={range(field.startYear, field.endYear)}
-                                emptyOption="year"
-                                onBlur={this.onBlur}
-                                onChange={this.onChangeField.bind(this, "year")}
-                                idx={`${this.props.id}-year`}
-                                {...field}
-                            />
-                        </li>
-                        <li>
-                            <DateSelector
-                                extractField={extractMonth}
-                                range={rangeZeroPad(1, 13)}
-                                emptyOption="month"
-                                onBlur={this.onBlur}
-                                onChange={this.onChangeField.bind(this, "month")}
-                                idx={`${this.props.id}-month`}
-                                {...field}
-                            />
-                        </li>
-                        <li>
-                            <DateSelector
-                                extractField={extractDay}
-                                range={rangeZeroPad(1, 32)}
-                                emptyOption="day"
-                                onBlur={this.onBlur}
-                                onChange={this.onChangeField.bind(this, "day")}
-                                idx={`${this.props.id}-day`}
-                                {...field}
-                            />
-                        </li>
-                    </ul>
+                    <DayPickerInput onDayChange={day => field.input.onChange(formatDate(day, 'YYYY-MM-DD'))}
+                                    inputProps={{
+                                        id: this.props.id,
+                                        required: this.props.required
+                                    }}
+                                    component={DateInput}
+                                    value={formatDate(field.input.value, 'LL')}
+                                    placeholder={formatDate(this.props.placeholder, 'LL')}
+                                    dayPickerProps={{
+                                        showOutsideDays: true,
+                                        month: new Date(),
+                                        fromMonth: new Date(),
+                                    }}
+                                    format={'LL'}
+                                    formatDate={formatDate}
+                                    parseDate={parseDate}
+                    />
                 )}
                 {field.meta.touched &&
                 field.meta.error && (
@@ -164,6 +82,3 @@ const CompatibleDateWidget = props => {
 };
 
 export default CompatibleDateWidget;
-
-// Only for testing purposes
-export {extractDateToken};
