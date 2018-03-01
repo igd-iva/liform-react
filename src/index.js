@@ -22,26 +22,34 @@ const BaseForm = props => {
     );
 };
 
-const Liform = props => {
-    props.schema.showLabel = false;
-    const schema = compileSchema(props.schema);
-    const formName = props.formKey || props.schema.title || "form";
-    const FinalForm = reduxForm({
-        form: props.formKey || props.schema.title || "form",
-        validate: props.syncValidation || buildSyncValidation(schema, props.ajv),
-        initialValues: props.initialValues,
-        context: {...props.context, formName},
-        readOnly: props.readOnly,
-        destroyOnUnmount: false
-    })(props.baseForm || BaseForm);
-    return (
-        <FinalForm
-            renderFields={renderField.bind(this)}
-            {...props}
-            schema={schema}
-        />
-    );
-};
+class Liform extends React.Component {
+
+    render() {
+        this.props.schema.showLabel = false;
+        const schema = compileSchema(this.props.schema);
+        const formName = this.props.formKey || this.props.schema.title || "form";
+        const FinalForm = reduxForm({
+            form: this.props.formKey || this.props.schema.title || "form",
+            validate: this.props.syncValidation || buildSyncValidation(schema, this.props.ajv),
+            initialValues: this.props.initialValues,
+            context: {...this.props.context, formName},
+            readOnly: this.props.readOnly,
+            destroyOnUnmount: false
+        })(this.props.baseForm || BaseForm);
+        return (
+            <FinalForm
+                ref={(form) => this.form = form}
+                renderFields={renderField.bind(this)}
+                {...this.props}
+                schema={schema}
+            />
+        );
+    }
+
+    values() {
+        return this.form.values;
+    }
+}
 
 Liform.propTypes = {
     schema: PropTypes.object,

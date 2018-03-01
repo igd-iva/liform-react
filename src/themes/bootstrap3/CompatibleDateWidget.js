@@ -12,10 +12,15 @@ import {DateInput} from "./DateInput";
 
 class CompatibleDate extends React.Component {
     componentDidMount() {
-        if (!this.props.input.value && this.props.schema.default) {
-            this.setState({}, () => {
-                this.props.input.onChange(this.props.schema.default);
-            });
+        if (!this.props.input.value) {
+            if (this.props.schema.default) {
+                this.setState({}, () => {
+                    this.props.input.onChange(this.props.schema.default);
+                });
+            }
+            else {
+                this.setState({}, () => this.props.input.onChange(formatDate(new Date(), 'YYYY-MM-DD')));
+            }
         }
     }
 
@@ -38,7 +43,8 @@ class CompatibleDate extends React.Component {
                                         required: this.props.required
                                     }}
                                     component={DateInput}
-                                    value={formatDate(field.input.value, 'LL')}
+                                    overlayComponent={CustomOverlay}
+                                    value={field.input.value ? formatDate(field.input.value, 'LL') : formatDate(new Date(), 'LL')}
                                     placeholder={formatDate(this.props.placeholder, 'LL')}
                                     dayPickerProps={{
                                         showOutsideDays: true,
@@ -61,6 +67,16 @@ class CompatibleDate extends React.Component {
         );
     }
 }
+
+const CustomOverlay = ({classNames, selectedDay, children}) => {
+    return (
+        <div className={classNames.overlayWrapper} style={{"zIndex": 100}}>
+            <div className={classNames.overlay}>
+                {children}
+            </div>
+        </div>
+    );
+};
 
 const CompatibleDateWidget = props => {
     return (

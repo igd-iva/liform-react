@@ -20,13 +20,15 @@ class CompatibleDateTime extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.props.input.value && this.props.schema.default) {
-            this.setState({
-                day: formatDate(this.props.schema.default, 'YYYY-MM-DD'),
-                time: formatDate(this.props.schema.default, 'HH:mm')
-            }, () => {
-                this.props.input.onChange(this.props.schema.default);
-            });
+        if (!this.props.input.value) {
+            if (this.props.schema.default) {
+                this.updateState(this.props.schema.default);
+            }
+            else {
+                this.updateState(new Date());
+            }
+        } else {
+            this.updateState(this.props.input.value);
         }
     }
 
@@ -34,9 +36,16 @@ class CompatibleDateTime extends React.Component {
         let newState = this.state;
         if (key === "day")
             newState[key] = formatDate(data, "YYYY-MM-DD");
-        this.setState(newState,
-            this.props.input.onChange(formatDate(this.state.day + " " + this.state.time, "YYYY-MM-DDTHH:mm:00Z"))
-        );
+        this.updateState(newState.day, newState.key);
+    }
+
+    updateState(day, time = day) {
+        this.setState({
+            day: formatDate(day, 'YYYY-MM-DD'),
+            time: formatDate(time, 'HH:mm')
+        }, () => {
+            this.props.input.onChange(formatDate(this.state.day + " " + this.state.time, "YYYY-MM-DDTHH:mm:00") + 'Z');
+        });
     }
 
     render() {
