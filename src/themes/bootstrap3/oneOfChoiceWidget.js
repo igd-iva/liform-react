@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
-import {change} from "redux-form";
+import {change, formValueSelector} from "redux-form";
 import {connect} from "react-redux";
 import renderField from "../../renderField";
 import {map as _map} from "lodash";
@@ -10,10 +10,21 @@ class OneOfChoiceWidget extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            choice: 0
+            choice: 0,
+            oneOfProp: ""
         };
         this.renderOption = this.renderOption.bind(this);
         this.selectItem = this.selectItem.bind(this);
+    }
+
+    componentDidMount() {
+        const {fieldName, prefix, state, schema, context} = this.props;
+        const selector = formValueSelector(context.formName);
+        const val = selector(state, prefix + fieldName);
+        if (val) {
+            const index = schema.oneOf.findIndex(o => o.properties[fieldName].default === val[fieldName]);
+            this.setState({choice: index});
+        }
     }
 
     render() {
@@ -27,12 +38,13 @@ class OneOfChoiceWidget extends Component {
                 <label className="control-label" htmlFor={"field-" + field.fieldName}>
                     {schema.title}
                 </label>
-                <select
+                {<select
                     className="form-control"
                     onChange={this.selectItem.bind(this)}
                     id={field.context.formName + "-field-" + field.fieldName}
                     required={field.required}
                     multiple={false}
+                    value={this.state.choice}
                 >
                     {_map(options, (item, idx) => {
                         return (
@@ -41,7 +53,7 @@ class OneOfChoiceWidget extends Component {
                             </option>
                         );
                     })}
-                </select>
+                </select>}
                 <div>{this.renderOption()}</div>
                 {field.description && (
                     <span className="help-block">{field.description}</span>
@@ -59,7 +71,9 @@ class OneOfChoiceWidget extends Component {
             field.readOnly,
             field.theme,
             field.prefix,
-            field.context
+            field.context,
+            field.required,
+
         );
     }
 
@@ -82,4 +96,6 @@ OneOfChoiceWidget.propTypes = {
     readOnly: PropTypes.bool
 };
 
-export default connect()(OneOfChoiceWidget);
+export default connect(state => {
+    return {state: state}
+})(OneOfChoiceWidget);
