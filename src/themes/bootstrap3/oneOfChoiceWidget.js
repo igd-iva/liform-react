@@ -36,24 +36,29 @@ class OneOfChoiceWidget extends Component {
         return (
             <div className={className}>
                 <label className="control-label" htmlFor={"field-" + field.fieldName}>
-                    {schema.title}
+                    {schema.title ? schema.title : field.fieldName}
                 </label>
-                {<select
-                    className="form-control"
-                    onChange={this.selectItem.bind(this)}
-                    id={field.context.formName + "-field-" + field.fieldName}
-                    required={field.required}
-                    multiple={false}
-                    value={this.state.choice}
-                >
-                    {_map(options, (item, idx) => {
-                        return (
-                            <option key={options.indexOf(item)} value={idx}>
-                                {item.title || idx}
-                            </option>
-                        );
-                    })}
-                </select>}
+                {!field.readOnly && (
+                    <select
+                        className="form-control"
+                        onChange={this.selectItem.bind(this)}
+                        id={field.context.formName + "-field-" + field.fieldName}
+                        required={field.required}
+                        multiple={false}
+                        value={this.state.choice}
+                    >
+                        {_map(options, (item, idx) => {
+                            return (
+                                <option key={options.indexOf(item)} value={idx}>
+                                    {item.title || idx}
+                                </option>
+                            );
+                        })}
+                    </select>
+                )}
+                {field.readOnly && (
+                    <p className="form-control-static">{options[this.state.choice].title}</p>
+                )}
                 <div>{this.renderOption()}</div>
                 {field.description && (
                     <span className="help-block">{field.description}</span>

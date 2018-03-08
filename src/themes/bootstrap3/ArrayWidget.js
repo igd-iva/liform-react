@@ -20,7 +20,7 @@ const renderArrayFields = (count,
             return (
                 <div key={idx}>
                     <div className="btn-group pull-right ">
-                        {idx !== count - 1 && count > 1 ? (
+                        {idx !== count - 1 && count > 1 && !readOnly ? (
                             <button
                                 className="btn btn-primary"
                                 onClick={e => {
@@ -33,7 +33,7 @@ const renderArrayFields = (count,
                         ) : (
                             ""
                         )}
-                        {idx !== 0 && count > 1 ? (
+                        {idx !== 0 && count > 1 && !readOnly ? (
                             <button
                                 className="btn btn-primary"
                                 onClick={e => {
@@ -46,16 +46,17 @@ const renderArrayFields = (count,
                         ) : (
                             ""
                         )}
-
-                        <button
-                            className="btn btn-danger"
-                            onClick={e => {
-                                e.preventDefault();
-                                remove(idx);
-                            }}
-                        >
-                            <span className="glyphicon glyphicon-trash"/>
-                        </button>
+                        {!readOnly && (
+                            <button
+                                className="btn btn-danger"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    remove(idx);
+                                }}
+                            >
+                                <span className="glyphicon glyphicon-trash"/>
+                            </button>
+                        )}
                     </div>
                     {renderField(
                         {...schema, showLabel: false},
@@ -98,13 +99,15 @@ const renderInput = field => {
                     field.fields.swap(a, b);
                 }
             )}
-            <button
-                type="button"
-                className="pull-right btn btn-primary"
-                onClick={() => field.fields.push()}
-            >
-                Add
-            </button>
+            {!field.readOnly && (
+                <button
+                    type="button"
+                    className="pull-right btn btn-primary"
+                    onClick={() => field.fields.push()}
+                >
+                    Add
+                </button>
+            )}
             <div className="clearfix"/>
         </div>
     );
