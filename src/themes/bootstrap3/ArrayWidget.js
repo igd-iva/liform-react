@@ -15,6 +15,7 @@ const renderArrayFields = (count,
                            context,
                            swap) => {
     const prefix = fieldName + ".";
+    console.log(schema)
     if (count) {
         return _times(count, idx => {
             return (
@@ -46,7 +47,7 @@ const renderArrayFields = (count,
                         ) : (
                             ""
                         )}
-                        {!readOnly && (
+                        {!readOnly && (schema.minItems ? count > schema.minItems : true) && (
                             <button
                                 className="btn btn-danger"
                                 onClick={e => {
@@ -59,7 +60,7 @@ const renderArrayFields = (count,
                         )}
                     </div>
                     {renderField(
-                        {...schema, showLabel: false},
+                        {...schema.items, showLabel: false},
                         idx.toString(),
                         readOnly,
                         theme,
@@ -89,7 +90,7 @@ const renderInput = field => {
             )}
             {renderArrayFields(
                 field.fields.length,
-                field.schema.items,
+                field.schema,
                 field.readOnly,
                 field.theme,
                 field.fieldName,
@@ -99,7 +100,7 @@ const renderInput = field => {
                     field.fields.swap(a, b);
                 }
             )}
-            {!field.readOnly && (
+            {!field.readOnly && (field.schema.maxItems ? field.fields.length < field.schema.maxItems : true) && (
                 <button
                     type="button"
                     className="pull-right btn btn-primary"
