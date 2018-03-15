@@ -14,6 +14,15 @@ class RenderSelect extends React.Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        const optionNames = nextProps.schema.enum_titles || nextProps.schema.enum;
+        if ((nextProps.input.value === "" || (optionNames.length === 1 && optionNames[0] !== nextProps.input.value)) && nextProps.defaultValue) {
+            this.setState({}, () => {
+                nextProps.input.onChange(nextProps.defaultValue);
+            });
+        }
+    }
+
     render() {
         const className = classNames([
             "form-group",
