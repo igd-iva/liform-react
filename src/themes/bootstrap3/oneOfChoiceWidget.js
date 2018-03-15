@@ -70,6 +70,10 @@ class OneOfChoiceWidget extends Component {
     renderOption() {
         const field = this.props;
         const schema = field.schema.oneOf[this.state.choice];
+
+        if (schema.properties && Object.keys(schema.properties).length === 1 && schema.properties[this.props.fieldName])
+            return;
+        //if (schema.properties && schema.properties.length > 0)
         return renderField(
             schema,
             field.fieldName,
@@ -78,14 +82,14 @@ class OneOfChoiceWidget extends Component {
             field.prefix,
             field.context,
             field.required,
-
         );
     }
 
     selectItem(e) {
-        const {schema, context, dispatch} = this.props;
+        //FIXME
+        const {schema, context, dispatch, prefix} = this.props;
         for (let property in schema.oneOf[this.state.choice].properties) {
-            dispatch(change(context.formName, property, null));
+            //dispatch(change(context.formName, prefix+property, null));
         }
         this.setState({choice: e.target.value});
     }
