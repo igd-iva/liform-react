@@ -15,7 +15,6 @@ const renderArrayFields = (count,
                            context,
                            swap) => {
     const prefix = fieldName + ".";
-    console.log(schema)
     if (count) {
         return _times(count, idx => {
             return (
@@ -67,6 +66,7 @@ const renderArrayFields = (count,
                         prefix,
                         context
                     )}
+                    <hr/>
                 </div>
             );
         });
