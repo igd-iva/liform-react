@@ -90,7 +90,7 @@ class OneOfChoiceWidget extends Component {
         const {schema, context, dispatch, prefix} = this.props;
         for (let property in schema.oneOf[this.state.choice].properties) {
             if (property === "@type") {
-                dispatch(change(context.formName, prefix + property, schema.oneOf[e.target.value]["@type"]["default"]));
+                dispatch(change(context.formName, prefix + property, schema.oneOf[e.target.value].properties["@type"]["default"]));
             } else
                 dispatch(change(context.formName, prefix + property, null));
         }
