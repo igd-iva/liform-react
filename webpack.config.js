@@ -29,7 +29,8 @@ var config = {
         loaders: [ 'json-loader' ],
       },
     ]
-  }
+  },
+  devtool: 'source-map'
 };
 
 module.exports = config;
