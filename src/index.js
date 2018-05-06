@@ -59,7 +59,8 @@ Liform.propTypes = {
     formKey: PropTypes.string,
     baseForm: PropTypes.func,
     context: PropTypes.object,
-    ajv: PropTypes.object
+    ajv: PropTypes.object,
+    typeIdentifier: PropTypes.string
 };
 
 export default Liform;
