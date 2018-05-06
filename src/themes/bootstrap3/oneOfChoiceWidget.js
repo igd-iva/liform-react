@@ -89,7 +89,10 @@ class OneOfChoiceWidget extends Component {
         //FIXME
         const {schema, context, dispatch, prefix} = this.props;
         for (let property in schema.oneOf[this.state.choice].properties) {
-            dispatch(change(context.formName, prefix + property, null));
+            if (property === "@type") {
+                dispatch(change(context.formName, prefix + property, schema.oneOf[e.target.value]["@type"]["default"]));
+            } else
+                dispatch(change(context.formName, prefix + property, null));
         }
         this.setState({choice: e.target.value});
     }
